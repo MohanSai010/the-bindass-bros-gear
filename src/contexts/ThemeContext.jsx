@@ -1,40 +1,31 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
-const ThemeContext = createContext(null)
+const ThemeContext = createContext()
 
 export function ThemeProvider({ children }) {
-  const [mode, setMode] = useState(() => {
-    return localStorage.getItem('bindass-theme') || 'system'
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('tbb-theme')
+    return saved === 'light' ? 'light' : 'dark'
   })
 
-  const [systemDark, setSystemDark] = useState(() =>
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-  )
+  const dark = theme === 'dark'
 
   useEffect(() => {
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
-    const listener = (e) => setSystemDark(e.matches)
-    media.addEventListener('change', listener)
-    return () => media.removeEventListener('change', listener)
-  }, [])
-
-  const dark = mode === 'dark' || (mode === 'system' && systemDark)
-
-  useEffect(() => {
-    localStorage.setItem('bindass-theme', mode)
+    localStorage.setItem('tbb-theme', theme)
     document.documentElement.classList.toggle('dark', dark)
-    document.documentElement.style.backgroundColor = dark ? '#08080c' : '#FFF3D6'
-  }, [mode, dark])
+  }, [theme, dark])
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
+  }
 
   return (
-    <ThemeContext.Provider value={{ mode, setMode, dark }}>
+    <ThemeContext.Provider value={{ dark, theme, setTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   )
 }
 
 export function useTheme() {
-  const ctx = useContext(ThemeContext)
-  if (!ctx) throw new Error('useTheme must be used within ThemeProvider')
-  return ctx
+  return useContext(ThemeContext)
 }

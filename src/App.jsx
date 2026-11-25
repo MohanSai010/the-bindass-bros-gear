@@ -100,7 +100,7 @@ function HomePage() {
   const muted = dark ? 'text-white/50' : 'text-[#795A38]'
 
   return (
-    <main className={`${theme} min-h-screen pt-[82px] transition-colors duration-500`}>
+    <main className={`${theme} min-h-screen overflow-x-hidden pt-[74px] md:pt-[82px] transition-colors duration-500`}>
       {/* AMBIENT BACKGROUND */}
       <div className="ambient-background" aria-hidden="true">
         <div className="ambient-orb one" />
@@ -110,60 +110,63 @@ function HomePage() {
       </div>
 
       {/* NAVIGATION */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 md:px-12 py-4 backdrop-blur-xl border-b ${
-          dark
-            ? 'bg-[#08080c]/90 border-white/10'
-            : 'bg-[#FFF3D6]/95 border-[#FFAA33]/30'
-        }`}
-      >
-        <a href="#" className="flex items-center gap-3 text-lg md:text-xl font-black tracking-tight">
-          <img
-            src="/logo.png"
-            alt="The Bindass Bros Logo"
-            className="h-14 w-14 md:h-20 md:w-20 object-contain logo-glow-orbit"
-          />
-          <span>
-            THE BINDASS BROS<span className="text-[#FFAA33]">.</span>
-          </span>
-        </a>
+   <nav
+     className={`fixed top-0 left-0 right-0 z-[100] flex items-center justify-between gap-2 px-4 md:px-12 py-3.5 md:py-4 backdrop-blur-xl border-b ${
+       dark
+         ? 'bg-[#08080c]/90 border-white/10'
+         : 'bg-[#FFF3D6]/95 border-[#FFAA33]/30'
+     }`}
+   >
+     <a
+       href="#"
+       className="flex min-w-0 items-center gap-2.5 md:gap-3 text-sm sm:text-base md:text-xl font-black tracking-tight"
+     >
+       <img
+         src="/logo.png"
+         alt="The Bindass Bros Logo"
+         className="h-11 w-11 sm:h-12 sm:w-12 md:h-16 md:w-16 shrink-0 object-contain logo-glow-orbit"
+       />
+       <span className="truncate">
+         THE BINDASS BROS<span className="text-[#FFAA33]">.</span>
+       </span>
+     </a>
 
-        <div className="hidden md:flex items-center gap-10 text-sm font-medium">
-          {[
-            { label: 'Home', href: '#home' },
-            { label: 'My Setup', href: '#setup' },
-            { label: 'My Picks', href: '#picks' },
-            { label: 'About', href: '#about' },
-          ].map((link) => (
-            <a key={link.href} href={link.href} className="group relative py-1">
-              <span className="relative block overflow-hidden">
-                <span className="block transition-transform duration-300 ease-out group-hover:-translate-y-full">
-                  {link.label}
-                </span>
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-0 block text-[#FFAA33] transition-transform duration-300 ease-out translate-y-full group-hover:translate-y-0"
-                >
-                  {link.label}
-                </span>
-              </span>
-              <span className="absolute bottom-0 left-0 h-[2px] w-0 rounded-full bg-gradient-to-r from-[#FFAA33] to-[#FFD27A] transition-all duration-300 ease-out group-hover:w-full" />
-            </a>
-          ))}
-        </div>
+     <div className="hidden md:flex items-center gap-10 text-sm font-medium">
+       {[
+         { label: 'Home', href: '#home' },
+         { label: 'My Setup', href: '#setup' },
+         { label: 'My Picks', href: '#picks' },
+         { label: 'About', href: '#about' },
+       ].map((link) => (
+         <a key={link.href} href={link.href} className="group relative py-1">
+           <span className="relative block overflow-hidden">
+             <span className="block transition-transform duration-300 ease-out group-hover:-translate-y-full">
+               {link.label}
+             </span>
+             <span
+               aria-hidden="true"
+               className="absolute inset-0 block text-[#FFAA33] transition-transform duration-300 ease-out translate-y-full group-hover:translate-y-0"
+             >
+               {link.label}
+             </span>
+           </span>
+           <span className="absolute bottom-0 left-0 h-[2px] w-0 rounded-full bg-gradient-to-r from-[#FFAA33] to-[#FFD27A] transition-all duration-300 ease-out group-hover:w-full" />
+         </a>
+       ))}
+     </div>
 
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
+     <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+       <ThemeToggle />
 
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X /> : <Menu />}
-          </button>
-        </div>
-      </nav>
+       <button
+         className="md:hidden p-1.5"
+         onClick={() => setMenuOpen(!menuOpen)}
+         aria-label="Toggle menu"
+       >
+         {menuOpen ? <X size={22} /> : <Menu size={22} />}
+       </button>
+     </div>
+   </nav>
 
       {/* ANIMATED MOBILE MENU */}
       <AnimatePresence>

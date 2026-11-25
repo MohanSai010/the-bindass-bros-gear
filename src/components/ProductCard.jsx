@@ -1,123 +1,133 @@
-import { ArrowUpRight, ShoppingBag } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { ArrowUpRight, Package } from 'lucide-react'
 
-function ProductCard({ product, dark = true }) {
+function formatPrice(value) {
+  if (value === null || value === undefined || value === '') return ''
+  const str = String(value).trim()
+  if (str.startsWith('₹') || str.startsWith('$')) return str
+  const num = Number(str.replace(/,/g, ''))
+  return Number.isNaN(num) ? `₹${str}` : `₹${num.toLocaleString('en-IN')}`
+}
+
+export default function ProductCard({ product, dark }) {
+  const formattedPrice = formatPrice(product.price)
+  const formattedOriginal = formatPrice(product.original_price)
+
   return (
-    <motion.article
-      whileHover={{ y: -7 }}
-      transition={{ duration: 0.25 }}
-      className={`group overflow-hidden rounded-2xl border ${
+    <motion.a
+      href={product.url || '#'}
+      target="_blank"
+      rel="noopener noreferrer"
+      whileHover={{ y: -5 }}
+      transition={{ duration: 0.25, ease: 'easeOut' }}
+      className={`group flex h-full flex-col overflow-hidden rounded-2xl border transition-all duration-300 ${
         dark
-          ? 'bg-white/[0.04] border-white/10'
-          : 'bg-[#FFF9EC] border-[#FFAA33]/30'
+          ? 'border-white/10 bg-[#121218]/90 hover:border-[#FFAA33]/50 hover:shadow-[0_12px_35px_rgba(255,170,51,0.12)]'
+          : 'border-[#FFAA33]/30 bg-white/95 hover:border-[#FFAA33] hover:shadow-[0_12px_35px_rgba(217,119,6,0.12)]'
       }`}
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#3B240B] via-[#21180F] to-black flex items-center justify-center">
+      {/* IMAGE FRAME */}
+      <div
+        className={`relative aspect-[4/3] w-full overflow-hidden ${
+          dark
+            ? 'bg-gradient-to-b from-[#1d1812] to-[#0d0d12]'
+            : 'bg-gradient-to-b from-[#FFF6E0] to-[#FDEBC8]'
+        }`}
+      >
+        {/* TOP BADGE */}
+        {product.tag && (
+          <span className="absolute left-3 top-3 z-10 rounded-full bg-[#FFAA33] px-2.5 py-1 text-[9px] md:text-[10px] font-extrabold tracking-[0.14em] text-[#1a1105] shadow-md">
+            {product.tag}
+          </span>
+        )}
+
         {product.image ? (
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-contain p-6 group-hover:scale-105 transition duration-500"
+            loading="lazy"
+            className="h-full w-full object-contain p-5 pt-9 transition-transform duration-500 ease-out group-hover:scale-105"
           />
         ) : (
-          <div className="text-center">
-            <ShoppingBag size={42} className="mx-auto text-[#FFAA33] mb-3" />
-            <p className="text-xs tracking-[0.25em] text-white/50">
-              PRODUCT IMAGE
-            </p>
+          <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 pt-5 opacity-45">
+            <Package size={28} className="text-[#FFAA33]" />
+            <span className="text-[10px] font-semibold tracking-[0.2em] uppercase">
+              No Image
+            </span>
           </div>
-        )}
-
-        {/* BADGE WITH LOOPING GOLDEN GLARE */}
-        {product.tag && (
-          <span className="absolute top-4 left-4 overflow-hidden bg-gradient-to-r from-[#E68A00] via-[#FFAA33] to-[#F59E0B] text-white text-[10px] font-bold tracking-wider px-3 py-1.5 rounded-full shadow-lg">
-            <span className="relative z-10">{product.tag}</span>
-            <motion.span
-              aria-hidden="true"
-              initial={{ x: '-150%' }}
-              animate={{ x: '250%' }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                repeatDelay: 1.6,
-                ease: 'easeInOut',
-              }}
-              className="pointer-events-none absolute inset-y-0 left-0 w-1/2 -skew-x-25 bg-gradient-to-r from-transparent via-[#FFF7CC]/80 to-transparent"
-            />
-          </span>
         )}
       </div>
 
-      <div className="p-4 md:p-5">
-        <p className={`text-[11px] font-bold uppercase tracking-[0.2em] mb-1.5 ${dark ? 'text-[#FFAA33]' : 'text-orange-700'}`}>
-          {product.category}
-        </p>
+      {/* DETAILS */}
+      <div className="flex flex-1 flex-col justify-between p-4 md:p-5">
+        <div>
+          <p className="text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase text-[#FFAA33]">
+            {product.category || 'GEAR'}
+          </p>
 
-        <h3 className="font-display text-lg md:text-xl font-bold tracking-tight leading-snug">
-          {product.name}
-        </h3>
+          <h3 className="mt-1.5 line-clamp-1 text-base md:text-lg font-bold tracking-tight">
+            {product.name}
+          </h3>
 
-        <p className={`text-xs md:text-sm mt-1.5 leading-relaxed ${dark ? 'text-white/60' : 'text-black/60'}`}>
-          {product.description}
-        </p>
+          <p
+            className={`mt-1 line-clamp-2 text-xs md:text-sm leading-relaxed ${
+              dark ? 'text-white/55' : 'text-[#795A38]'
+            }`}
+          >
+            {product.description}
+          </p>
+        </div>
 
-        <div className="flex items-end justify-between gap-2 mt-6 pt-4 border-t border-current/10">
-          {/* LOOPING STRIKE-THROUGH + POPPING CURRENT PRICE */}
+        {/* PRICE + CTA */}
+        <div
+          className={`mt-4 flex items-center justify-between gap-2 border-t pt-3.5 ${
+            dark ? 'border-white/10' : 'border-[#FFAA33]/20'
+          }`}
+        >
           <div className="flex flex-col">
-            {product.original_price && (
-              <span className="font-display relative inline-block w-fit text-xs md:text-sm font-semibold opacity-55 mb-0.5">
-                {product.original_price}
+            {formattedOriginal && (
+              <span
+                className={`relative w-fit text-[11px] font-medium ${
+                  dark ? 'text-white/45' : 'text-[#795A38]/70'
+                }`}
+              >
+                {formattedOriginal}
                 <motion.span
+                  aria-hidden="true"
+                  initial={{ scaleX: 0 }}
                   animate={{ scaleX: [0, 1, 1, 0] }}
                   transition={{
-                    duration: 2.6,
-                    times: [0, 0.35, 0.75, 1],
+                    duration: 2.2,
                     repeat: Infinity,
                     repeatDelay: 0.6,
                     ease: 'easeInOut',
                   }}
-                  className="absolute left-0 top-1/2 h-[2px] w-full origin-left bg-red-500 -rotate-6 rounded-full shadow-[0_0_6px_rgba(239,68,68,0.8)]"
+                  style={{ originX: 0 }}
+                  className="absolute left-0 top-1/2 h-[1.5px] w-full -translate-y-1/2 bg-red-500"
                 />
               </span>
             )}
 
-            <motion.span
-              animate={{ scale: [1, 1.09, 1] }}
-              transition={{
-                duration: 2.2,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              className={`font-display inline-block origin-left text-xl md:text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r ${
-                dark
-                  ? 'from-[#FFAA33] via-[#FFD27A] to-[#F07818]'
-                  : 'from-[#D97706] via-[#EA580C] to-[#B45309]'
-              }`}
-            >
-              {product.price || 'Price coming soon'}
-            </motion.span>
+            <span className="font-display text-lg md:text-xl font-extrabold tracking-tight text-[#FFAA33]">
+              {formattedPrice}
+            </span>
           </div>
 
-          {product.url ? (
-            <a
-              href={product.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs md:text-sm font-bold shrink-0 transition ${
-                dark
-                  ? 'bg-[#FFAA33]/15 text-[#FFAA33] hover:bg-[#FFAA33] hover:text-white'
-                  : 'bg-[#FFAA33]/20 text-orange-800 hover:bg-[#FFAA33] hover:text-white'
-              }`}
-            >
-              View <ArrowUpRight size={15} />
-            </a>
-          ) : (
-            <span className="text-xs opacity-50">Coming soon</span>
-          )}
+          <span
+            className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3.5 py-2 text-xs font-bold transition-all duration-300 ${
+              dark
+                ? 'bg-[#FFAA33]/15 text-[#FFAA33] group-hover:bg-[#FFAA33] group-hover:text-black'
+                : 'bg-[#FFAA33]/20 text-[#9A5500] group-hover:bg-[#FFAA33] group-hover:text-white'
+            }`}
+          >
+            View
+            <ArrowUpRight
+              size={14}
+              className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
+          </span>
         </div>
       </div>
-    </motion.article>
+    </motion.a>
   )
 }
-
-export default ProductCard
